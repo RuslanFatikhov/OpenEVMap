@@ -2,12 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
     <title>OpenEVmap</title>
     <link
       href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css"
       rel="stylesheet"
     />
+    <link rel="manifest" href="/static/manifest.json" />
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
@@ -330,7 +334,7 @@
 
               <!--Copyright-->
               <div class="copyright">
-                  <p>OpenEVmap Beta 1.0</p>
+                  <p>OpenEVmap Beta 1.1</p>
                   <p>2026</p>
                 </div>
 
@@ -440,6 +444,13 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
     <script>
       window.MAPBOX_TOKEN = "{{ mapbox_token }}";
+    </script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/static/service-worker.js");
+        });
+      }
     </script>
     <script src="/static/app.js"></script>
   </body>

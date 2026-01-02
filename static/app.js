@@ -43,6 +43,8 @@ const state = {
   mapReady: false,
 };
 
+const QUEUE_KEY = "openEVmap:queue";
+
 let loadTimer = null;
 let currentAbort = null;
 let lastBboxKey = null;
@@ -100,6 +102,30 @@ const FILTERS_KEY = "openEVmap:filters";
 function setHint(text, isError = false) {
   modalHint.textContent = text;
   modalHint.style.color = isError ? "#fca5a5" : "#94a3b8";
+}
+
+function saveQueueState() {
+  const items = Array.from(state.queue.values());
+  localStorage.setItem(QUEUE_KEY, JSON.stringify(items));
+  uploadBtn.textContent = `Upload (${state.queue.size})`;
+}
+
+function loadQueueState() {
+  const raw = localStorage.getItem(QUEUE_KEY);
+  if (!raw) return;
+  try {
+    const items = JSON.parse(raw);
+    if (!Array.isArray(items)) return;
+    state.queue.clear();
+    items.forEach((item) => {
+      if (!item || !item.type || !item.id) return;
+      const key = `${item.type}/${item.id}`;
+      state.queue.set(key, item);
+    });
+    uploadBtn.textContent = `Upload (${state.queue.size})`;
+  } catch (err) {
+    return;
+  }
 }
 
 function updateZoomHint() {
@@ -974,7 +1000,7 @@ editForm.addEventListener("submit", async (e) => {
   }
   const key = `${item.type}/${item.id}`;
   state.queue.set(key, item);
-  uploadBtn.textContent = `Upload (${state.queue.size})`;
+  saveQueueState();
   setHint("Saved locally. Use Upload to commit.", false);
   closeModal();
 });
@@ -1008,7 +1034,7 @@ uploadBtn.addEventListener("click", async () => {
       return;
     }
     state.queue.clear();
-    uploadBtn.textContent = "Upload (0)";
+    saveQueueState();
     await loadPOIs({ force: true });
   } catch (err) {
     alert("Upload failed");
@@ -1026,6 +1052,7 @@ if (searchBtn) {
 }
 updateZoomHint();
 initBottomTray();
+loadQueueState();
 
 function toggleCostRow() {
   if (!feeCheckbox || !costRow) return;
