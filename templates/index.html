@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenEVmap</title>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+
+    <!--APP-->
+    <div class="app">
+
+
+      <!--Information-->
+      <aside class="side-modal bottom-modal hidden" id="infoModal">
+          <div class="modal-header">
+            <h2 id="modalTitle">Charging station</h2>
+            <button id="closeModal" class="close">
+              <img src="{{ url_for('static', filename='icons/cross.svg') }}" alt="Close" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="editForm">
+              <!--div class="form-row">
+                <label for="source">Source</label>
+                <input id="source" name="source" type="text" placeholder="survey" />
+              </div-->
+              <div class="form-row">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" />
+              </div>
+              <div class="form-row">
+                <label for="operator">Operator</label>
+                <input id="operator" name="operator" type="text" />
+              </div>
+              <div class="form-row">
+                <label for="brand">Brand</label>
+                <input id="brand" name="brand" type="text" />
+              </div>
+              <div class="form-row">
+                <label for="capacity">Capacity</label>
+                <input id="capacity" name="capacity" type="number" min="0" />
+              </div>
+
+              <span class="divider"></span>
+
+              <!-- Socket types -->
+
+              <div class="form-column">
+                <h4>Socket types</h4>
+                <div class="socket-buttons">
+                  <button type="button" class="socket-btn" data-target="socket_type1" aria-pressed="false">
+                    <img src="/static/icons/type1.svg" alt="Type1 J1772" />
+                    <span>Type1 J1772</span>
+                    
+                  </button>
+
+                  <button type="button" class="socket-btn" data-target="socket_type2" aria-pressed="false">
+                    <img src="/static/icons/type2.svg" alt="Type2 Mennekes" />
+                    <span>Type2 Mennekes</span>
+                    
+                  </button>
+
+                  <button type="button" class="socket-btn" data-target="socket_chademo" aria-pressed="false">
+                    <img src="/static/icons/chademo.svg" alt="CHAdeMO" />
+                    <span>CHAdeMO</span>
+                    
+                  </button>
+
+                  <button type="button" class="socket-btn" data-target="socket_ccs1" aria-pressed="false">
+                    <img src="/static/icons/css1.svg" alt="CCS Combo Type 1" />
+                    <span>CCS Combo Type 1</span>
+                    
+                  </button>
+
+                  <button type="button" class="socket-btn" data-target="socket_ccs" aria-pressed="false">
+                    <img src="/static/icons/css2.svg" alt="CCS Combo Type 2" />
+                    <span>CCS Combo Type 2</span>
+                    
+                  </button>
+
+                  <button type="button" class="socket-btn" data-target="socket_gbt" aria-pressed="false">
+                    <img src="/static/icons/gbt.svg" alt="GB/T" />
+                    <span>GB/T</span>
+                    
+                  </button>
+
+                  <button type="button" class="socket-btn" data-target="socket_supercharger" aria-pressed="false">
+                    <img src="/static/icons/supercharger.svg" alt="Supercharger" />
+                    <span>Super<br>charger</span>
+                    
+                  </button>
+                </div>
+                <input id="socket_type1" name="socket:type1" type="checkbox" class="hidden-input" />
+                <input id="socket_type2" name="socket:type2" type="checkbox" class="hidden-input" />
+                <input id="socket_chademo" name="socket:chademo" type="checkbox" class="hidden-input" />
+                <input id="socket_ccs1" name="socket:ccs1" type="checkbox" class="hidden-input" />
+                <input id="socket_ccs" name="socket:ccs" type="checkbox" class="hidden-input" />
+                <input id="socket_gbt" name="socket:gbt" type="checkbox" class="hidden-input" />
+                <input id="socket_supercharger" name="socket:tesla_supercharger" type="checkbox" class="hidden-input" />
+              </div>
+
+              <span class="divider"></span>
+
+              <!-- Fast charge -->
+              <div class="checkbox">
+                <label>
+                  <input id="fast_charge" name="fast_charge" type="checkbox" />
+                  Ultra-fast charging
+                </label>
+              </div>
+
+              <!-- Fee -->
+              <div class="checkbox">
+                <label class="cell">
+                  <input class="checkbox" id="fee" name="fee" type="checkbox" />
+                  Fee
+                </label>
+              </div>
+
+
+              <div class="form-row" id="chargeRow">
+                <label for="charge_amount">Price</label>
+                <div class="charge-row">
+                  <input id="charge_amount" name="charge_amount" type="number" min="0" step="0.01" />
+                  <select id="charge_currency" name="charge_currency">
+                    <option value="RUB">RUB</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="KZT">KZT</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Payment by app QR code -->
+              <div class="checkbox">
+                <label>
+                  <input id="payment_qr" name="payment:app:qr" type="checkbox" />
+                  Оплата по QR-коду через приложение
+                </label>
+              </div>
+
+              <!-- Power -->
+              <div class="form-row">
+                <label for="output">Power (kW)</label>
+                <input id="output" name="charging_station:output" type="text" />
+              </div>
+
+              <!-- Hours -->
+              <div class="form-row">
+                <label for="opening_hours">Hours</label>
+                <input id="opening_hours" name="opening_hours" type="text" />
+              </div>
+
+              <!-- Access -->
+              <div class="form-row">
+                <label for="access">Access</label>
+                <select id="access" name="access">
+                  <option value="">Select access</option>
+                  <option value="yes">Public</option>
+                  <option value="customers">Customers</option>
+                  <option value="private">Private</option>
+                  <option value="permissive">Permissive</option>
+                  <option value="destination">Destination</option>
+                  <option value="no">No access</option>
+                </select>
+              </div>
+
+              <!--Save-->
+              <div class="panel-footer">
+                <button type="submit" class="btn_action_label" id="saveBtn">Save</button>
+              </div>
+              <p class="hint" id="modalHint"></p>
+            </form>
+          </div>
+      </aside>
+
+      <!--Filters-->
+      <aside class="filters-modal bottom-modal hidden" id="filtersModal">
+          <div class="modal-header">
+            <h2>Filters</h2>
+
+            <!--Close-->
+            <button id="closeFilters" class="close">
+              <img src="{{ url_for('static', filename='icons/cross.svg') }}" alt="Close" />
+            </button>
+
+          </div>
+          <div class="modal-body">
+            <label class="filter-toggle">
+              <input type="checkbox" id="filterAll" checked />
+              Show all
+            </label>
+            <div class="form-column">
+              <h4>Socket types</h4>
+              <div class="socket-buttons">
+                <button type="button" class="socket-btn" data-target="filter_socket_type1" aria-pressed="false">
+                  <img src="/static/icons/type1.svg" alt="Type1 J1772" />
+                  <span>Type1 J1772</span>
+                </button>
+
+                <button type="button" class="socket-btn" data-target="filter_socket_type2" aria-pressed="false">
+                  <img src="/static/icons/type2.svg" alt="Type2 Mennekes" />
+                  <span>Type2 Mennekes</span>
+                </button>
+
+                <button type="button" class="socket-btn" data-target="filter_socket_chademo" aria-pressed="false">
+                  <img src="/static/icons/chademo.svg" alt="CHAdeMO" />
+                  <span>CHAdeMO</span>
+                </button>
+
+                <button type="button" class="socket-btn" data-target="filter_socket_ccs1" aria-pressed="false">
+                  <img src="/static/icons/css1.svg" alt="CCS Combo Type 1" />
+                  <span>CCS Combo Type 1</span>
+                </button>
+
+                <button type="button" class="socket-btn" data-target="filter_socket_ccs" aria-pressed="false">
+                  <img src="/static/icons/css2.svg" alt="CCS Combo Type 2" />
+                  <span>CCS Combo Type 2</span>
+                </button>
+
+                <button type="button" class="socket-btn" data-target="filter_socket_gbt" aria-pressed="false">
+                  <img src="/static/icons/gbt.svg" alt="GB/T" />
+                  <span>GB/T</span>
+                </button>
+
+                <button type="button" class="socket-btn" data-target="filter_socket_supercharger" aria-pressed="false">
+                  <img src="/static/icons/supercharger.svg" alt="Supercharger" />
+                  <span>Super<br>charger</span>
+                </button>
+              </div>
+              <input id="filter_socket_type1" type="checkbox" class="hidden-input" />
+              <input id="filter_socket_type2" type="checkbox" class="hidden-input" />
+              <input id="filter_socket_chademo" type="checkbox" class="hidden-input" />
+              <input id="filter_socket_ccs1" type="checkbox" class="hidden-input" />
+              <input id="filter_socket_ccs" type="checkbox" class="hidden-input" />
+              <input id="filter_socket_gbt" type="checkbox" class="hidden-input" />
+              <input id="filter_socket_supercharger" type="checkbox" class="hidden-input" />
+            </div>
+
+            <div class="panel-footer">
+              <button type="button" id="saveFiltersBtn" class="btn_action_label">Save</button>
+            </div>
+            
+          </div>
+      </aside>
+
+
+      <!--On te map-->
+      <div class="m-top-right">
+
+        <!--My location-->
+        <button id="geoBtn">
+          <img src="/static/icons/pin.svg" alt="Geolocate" />
+        </button>
+
+
+        <!--Filter-->
+        <button id="filtersBtn" type="button">
+              <img src="/static/icons/funnel.svg" alt="Filters">
+        </button>
+
+
+        <!--Upload-->
+        <button id="uploadBtn">
+              <img src="{{ url_for('static', filename='icons/upload.svg') }}" alt="Filters" />
+        </button>
+
+        
+      </div>
+
+
+
+      <!--Bottom tray-->
+      <div id="shell-tray">
+
+        <div id="shell-tray-card-container">
+          <div class="mw-card" data-ref="search-ref" tabindex="-1">
+            <div class="mw-card-handle"></div>
+
+            
+
+            <div class="mw-inner">
+              <div class="mw-search-container" aria-labelledby="search-header">
+                <h3>OpenEVmap</h3>
+
+                <form class="mw-search-header" role="region" aria-label="Search" tabindex="-1">
+                  <div id="mw-search-bar-and-results">
+                    <div class="mw-search-bar-container">
+                      <label class="mw-search-bar">
+                        <div class="sc-icon">
+                          <div class="sc-symbol magnifyingglass"></div>
+                        </div>
+                        <input
+                          type="search"
+                          id="searchInput"
+                          dir="auto"
+                          placeholder="Search"
+                          autocomplete="off"
+                          autocapitalize="off"
+                          spellcheck="false"
+                          role="combobox"
+                          aria-autocomplete="list"
+                          aria-expanded="false"
+                          value=""
+                        />
+                      </label>
+                      <button type="button" id="searchBtn" class="mw-cancel-button is-hidden">Search</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+
+              <!--VStack-->
+              <div class="vstack">
+                <div class="vstack_cell" id="authArea"></div>
+
+                <button class="vstack_cell" id="projectInfoBtn">
+                  <p>Information</p>
+                  <img src="{{ url_for('static', filename='icons/chevron.svg') }}" alt="Info" />
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+
+
+      <!--Body-->
+      <div class="content">
+
+        
+
+
+        <div id="map"></div>
+        <div id="loadingStatus" class="loading-indicator hidden">
+          Loading points...
+        </div>
+        <div id="zoomHint" class="loading-indicator hidden">
+          Zoom in to load points.
+        </div>
+
+
+
+        
+
+
+
+
+        
+      </div>
+
+    </div>
+
+
+
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+    <script>
+      window.MAPBOX_TOKEN = "{{ mapbox_token }}";
+    </script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
