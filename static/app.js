@@ -69,6 +69,10 @@ const menuBtn = document.getElementById("menuBtn");
 const menuOverlay = document.getElementById("menuOverlay");
 const menuDrawer = document.getElementById("menuDrawer");
 const closeMenuBtn = document.getElementById("closeMenu");
+const projectInfoBtn = document.getElementById("projectInfoBtn");
+const infoOverlay = document.getElementById("infoOverlay");
+const infoModalCard = document.getElementById("infoModalCard");
+const closeInfoBtn = document.getElementById("closeInfo");
 const filterAll = document.getElementById("filterAll");
 const filterType1 = document.getElementById("filter_socket_type1");
 const filterType2 = document.getElementById("filter_socket_type2");
@@ -497,6 +501,22 @@ function closeMenu() {
   menuOverlay.classList.add("hidden");
 }
 
+function openInfoModal() {
+  if (!infoModalCard) return;
+  infoModalCard.classList.remove("hidden");
+  if (infoOverlay) {
+    infoOverlay.classList.remove("hidden");
+  }
+}
+
+function closeInfoModal() {
+  if (!infoModalCard) return;
+  infoModalCard.classList.add("hidden");
+  if (infoOverlay) {
+    infoOverlay.classList.add("hidden");
+  }
+}
+
 function loadFiltersState() {
   const raw = localStorage.getItem(FILTERS_KEY);
   if (!raw) return null;
@@ -851,6 +871,15 @@ if (closeMenuBtn) {
 if (menuOverlay) {
   menuOverlay.onclick = closeMenu;
 }
+if (projectInfoBtn) {
+  projectInfoBtn.onclick = openInfoModal;
+}
+if (closeInfoBtn) {
+  closeInfoBtn.onclick = closeInfoModal;
+}
+if (infoOverlay) {
+  infoOverlay.onclick = closeInfoModal;
+}
 function syncFilterState() {
   const allChecked = filterAll.checked;
   filterType1.disabled = allChecked;
@@ -906,6 +935,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     closeFilters();
     closeMenu();
+    closeInfoModal();
   }
 });
 

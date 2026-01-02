@@ -330,7 +330,7 @@
 
               <!--Copyright-->
               <div class="copyright">
-                  <p>OpenEVmap 1.0</p>
+                  <p>OpenEVmap Beta 1.0</p>
                   <p>2026</p>
                 </div>
 
@@ -339,7 +339,72 @@
           </div>
         </div>
       </div>
-      
+
+      <div class="filters-overlay hidden" id="infoOverlay"></div>
+      <aside class="filters-modal bottom-modal hidden" id="infoModalCard">
+        <div class="modal-header">
+          <h2>About OpenEVmap</h2>
+          <button id="closeInfo" class="close">
+            <img src="{{ url_for('static', filename='icons/cross.svg') }}" alt="Close" />
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="info-content">
+            <h3>OpenEVmap</h3>
+            <p>OpenEVmap is an open-source tool for mapping and maintaining EV charging stations in OpenStreetMap.</p>
+            <p>It helps contributors, EV operators, and developers add and edit EV charging infrastructure data correctly, consistently, and with respect to the OpenStreetMap ecosystem.</p>
+            <p>OpenEVmap does not create a separate or closed database. All edits are made directly to OpenStreetMap.</p>
+
+            <h3>Mission</h3>
+            <p>Make EV charging infrastructure data in OpenStreetMap accurate, up to date, easy to contribute to, and useful for everyone.</p>
+
+            <h3>Key principles</h3>
+            <ul>
+              <li>Open-first — all data belongs to OpenStreetMap.</li>
+              <li>OSM-friendly — built with respect for OSM rules, tagging practices, and community standards.</li>
+              <li>EV-focused — only electric vehicle charging infrastructure.</li>
+              <li>Low barrier to entry — accessible to non-expert mappers and EV operators.</li>
+              <li>No vendor lock-in — OpenEVmap is tooling, not a data silo.</li>
+            </ul>
+
+            <h3>Features (planned & in progress)</h3>
+            <ul>
+              <li>OAuth login via OpenStreetMap</li>
+              <li>Create new EV charging stations (POI)</li>
+              <li>Edit existing charging stations</li>
+              <li>Guided EV-specific tagging (connectors, power, access, payment, operator)</li>
+              <li>Validation to prevent common tagging mistakes</li>
+              <li>Change preview before submitting edits</li>
+              <li>Source attribution support</li>
+              <li>Minimal, focused UI for EV mapping</li>
+            </ul>
+
+            <h3>Authentication</h3>
+            <p>OpenEVmap uses OpenStreetMap OAuth for authentication. Users edit data under their own OSM account. All changes are transparent and fully traceable in OSM history.</p>
+
+            <h3>Why OpenEVmap exists</h3>
+            <p>Mapping EV charging stations directly in OpenStreetMap is powerful but often complex. OpenEVmap reduces incorrect tagging, prevents duplicate POIs, and helps EV operators contribute clean data.</p>
+
+            <h3>Relationship to commercial products</h3>
+            <p>OpenEVmap is an open, community-oriented project. It is developed alongside a commercial EV product, but it does not restrict access to data and improves shared infrastructure for everyone.</p>
+
+            <h3>Project status</h3>
+            <p>Early development / MVP stage. Initial focus: core editing flow, correct EV tagging, safe OSM integration.</p>
+
+            <h3>Contributing</h3>
+            <p>Contributions are welcome: code, UX feedback, OSM tagging expertise, and testing in different regions.</p>
+
+            <h3>License</h3>
+            <p>TBD (likely MIT or similar permissive license)</p>
+
+            <h3>Links</h3>
+            <p>OpenStreetMap: https://www.openstreetmap.org</p>
+            <p>Project repository: coming soon</p>
+            <p>Open tools for better EV maps.</p>
+          </div>
+        </div>
+      </aside>
+
 
 
 

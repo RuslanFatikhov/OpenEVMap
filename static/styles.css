@@ -697,6 +697,7 @@ button.ghost {
 
 .modal-body {
   overflow-y: auto;
+  padding-bottom: 100px;
 }
 
 .form-row {
@@ -733,6 +734,26 @@ button.ghost {
   flex-direction: column;
   gap: 8px;
   margin-top: 8px;
+}
+
+.info-content h3 {
+  margin: 16px 0 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.info-content p {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.info-content ul {
+  padding-left: 18px;
+  margin-bottom: 10px;
+}
+
+.info-content li {
+  margin-bottom: 6px;
 }
 
 .socket-details .form-row {
