@@ -46,6 +46,7 @@
                 <label for="capacity">Capacity</label>
                 <input id="capacity" name="capacity" type="number" min="0" />
               </div>
+              <p class="hint">Capacity = number of parking spaces, not connectors.</p>
 
               <span class="divider"></span>
 
@@ -54,101 +55,97 @@
               <div class="form-column">
                 <h4>Socket types</h4>
                 <div class="socket-buttons">
-                  <button type="button" class="socket-btn" data-target="socket_type1" aria-pressed="false">
+                  <button type="button" class="socket-btn" data-scope="edit" data-row="socket_row_type1" aria-pressed="false">
                     <img src="/static/icons/type1.svg" alt="Type1 J1772" />
                     <span>Type1 J1772</span>
-                    
                   </button>
 
-                  <button type="button" class="socket-btn" data-target="socket_type2" aria-pressed="false">
+                  <button type="button" class="socket-btn" data-scope="edit" data-row="socket_row_type2" aria-pressed="false">
                     <img src="/static/icons/type2.svg" alt="Type2 Mennekes" />
                     <span>Type2 Mennekes</span>
-                    
                   </button>
 
-                  <button type="button" class="socket-btn" data-target="socket_chademo" aria-pressed="false">
+                  <button type="button" class="socket-btn" data-scope="edit" data-row="socket_row_chademo" aria-pressed="false">
                     <img src="/static/icons/chademo.svg" alt="CHAdeMO" />
                     <span>CHAdeMO</span>
-                    
                   </button>
 
-                  <button type="button" class="socket-btn" data-target="socket_ccs1" aria-pressed="false">
+                  <button type="button" class="socket-btn" data-scope="edit" data-row="socket_row_ccs1" aria-pressed="false">
                     <img src="/static/icons/css1.svg" alt="CCS Combo Type 1" />
                     <span>CCS Combo Type 1</span>
-                    
                   </button>
 
-                  <button type="button" class="socket-btn" data-target="socket_ccs" aria-pressed="false">
+                  <button type="button" class="socket-btn" data-scope="edit" data-row="socket_row_ccs" aria-pressed="false">
                     <img src="/static/icons/css2.svg" alt="CCS Combo Type 2" />
                     <span>CCS Combo Type 2</span>
-                    
                   </button>
 
-                  <button type="button" class="socket-btn" data-target="socket_gbt" aria-pressed="false">
+                  <button type="button" class="socket-btn" data-scope="edit" data-row="socket_row_gbt" aria-pressed="false">
                     <img src="/static/icons/gbt.svg" alt="GB/T" />
                     <span>GB/T</span>
-                    
-                  </button>
-
-                  <button type="button" class="socket-btn" data-target="socket_supercharger" aria-pressed="false">
-                    <img src="/static/icons/supercharger.svg" alt="Supercharger" />
-                    <span>Super<br>charger</span>
-                    
                   </button>
                 </div>
-                <input id="socket_type1" name="socket:type1" type="checkbox" class="hidden-input" />
-                <input id="socket_type2" name="socket:type2" type="checkbox" class="hidden-input" />
-                <input id="socket_chademo" name="socket:chademo" type="checkbox" class="hidden-input" />
-                <input id="socket_ccs1" name="socket:ccs1" type="checkbox" class="hidden-input" />
-                <input id="socket_ccs" name="socket:ccs" type="checkbox" class="hidden-input" />
-                <input id="socket_gbt" name="socket:gbt" type="checkbox" class="hidden-input" />
-                <input id="socket_supercharger" name="socket:tesla_supercharger" type="checkbox" class="hidden-input" />
+                <div class="socket-details">
+                  <div class="form-row  hidden" id="socket_row_type1">
+                    <label for="socket_type1_count">Type1<br>J1772</label>
+                    <div class="socket-fields">
+                      <input id="socket_type1_count" name="socket:type1" type="number" min="0" step="1" placeholder="Count" />
+                      <input id="socket_type1_power" name="socket:type1:output" type="text" placeholder="Power (kW)" />
+                    </div>
+                  </div>
+                  <div class="form-row  hidden" id="socket_row_type2">
+                    <label for="socket_type2_count">Type2 Mennekes</label>
+                    <div class="socket-fields">
+                      <input id="socket_type2_count" name="socket:type2" type="number" min="0" step="1" placeholder="Count" />
+                      <input id="socket_type2_power" name="socket:type2:output" type="text" placeholder="Power (kW)" />
+                    </div>
+                  </div>
+                  <div class="form-row  hidden" id="socket_row_chademo">
+                    <label for="socket_chademo_count">CHAdeMO</label>
+                    <div class="socket-fields">
+                      <input id="socket_chademo_count" name="socket:chademo" type="number" min="0" step="1" placeholder="Count" />
+                      <input id="socket_chademo_power" name="socket:chademo:output" type="text" placeholder="Power (kW)" />
+                    </div>
+                  </div>
+                  <div class="form-row  hidden" id="socket_row_ccs1">
+                    <label for="socket_ccs1_count">CCS Combo Type 1</label>
+                    <div class="socket-fields">
+                      <input id="socket_ccs1_count" name="socket:ccs1" type="number" min="0" step="1" placeholder="Count" />
+                      <input id="socket_ccs1_power" name="socket:ccs1:output" type="text" placeholder="Power (kW)" />
+                    </div>
+                  </div>
+                  <div class="form-row  hidden" id="socket_row_ccs">
+                    <label for="socket_ccs_count">CCS Combo Type 2</label>
+                    <div class="socket-fields">
+                      <input id="socket_ccs_count" name="socket:ccs" type="number" min="0" step="1" placeholder="Count" />
+                      <input id="socket_ccs_power" name="socket:ccs:output" type="text" placeholder="Power (kW)" />
+                    </div>
+                  </div>
+                  <div class="form-row  hidden" id="socket_row_gbt">
+                    <label for="socket_gbt_count">GB/T</label>
+                    <div class="socket-fields">
+                      <input id="socket_gbt_count" name="socket:gbt" type="number" min="0" step="1" placeholder="Count" />
+                      <input id="socket_gbt_power" name="socket:gbt:output" type="text" placeholder="Power (kW)" />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <span class="divider"></span>
 
-              <!-- Fast charge -->
-              <div class="checkbox">
-                <label>
-                  <input id="fast_charge" name="fast_charge" type="checkbox" />
-                  Ultra-fast charging
-                </label>
-              </div>
-
               <!-- Fee -->
-              <div class="checkbox">
-                <label class="cell">
-                  <input class="checkbox" id="fee" name="fee" type="checkbox" />
-                  Fee
-                </label>
-              </div>
-
-
-              <div class="form-row" id="chargeRow">
-                <label for="charge_amount">Price</label>
-                <div class="charge-row">
-                  <input id="charge_amount" name="charge_amount" type="number" min="0" step="0.01" />
-                  <select id="charge_currency" name="charge_currency">
-                    <option value="RUB">RUB</option>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="KZT">KZT</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Payment by app QR code -->
-              <div class="checkbox">
+              <div class="cell">
+                
                 <label>
-                  <input id="payment_qr" name="payment:app:qr" type="checkbox" />
-                  Оплата по QR-коду через приложение
+                  
+                  <input class="checkbox" id="fee" name="fee" type="checkbox" />
                 </label>
+                <p>Fee</p>
               </div>
 
-              <!-- Power -->
-              <div class="form-row">
-                <label for="output">Power (kW)</label>
-                <input id="output" name="charging_station:output" type="text" />
+              <div class="form-row" id="costRow">
+                <label for="cost">Cost</label>
+                <input id="cost" name="cost" type="text" placeholder="e.g. 1000 KZT/hour or free" />
               </div>
 
               <!-- Hours -->
@@ -199,40 +196,36 @@
             <div class="form-column">
               <h4>Socket types</h4>
               <div class="socket-buttons">
-                <button type="button" class="socket-btn" data-target="filter_socket_type1" aria-pressed="false">
+                <button type="button" class="socket-btn" data-scope="filter" data-target="filter_socket_type1" aria-pressed="false">
                   <img src="/static/icons/type1.svg" alt="Type1 J1772" />
                   <span>Type1 J1772</span>
                 </button>
 
-                <button type="button" class="socket-btn" data-target="filter_socket_type2" aria-pressed="false">
+                <button type="button" class="socket-btn" data-scope="filter" data-target="filter_socket_type2" aria-pressed="false">
                   <img src="/static/icons/type2.svg" alt="Type2 Mennekes" />
                   <span>Type2 Mennekes</span>
                 </button>
 
-                <button type="button" class="socket-btn" data-target="filter_socket_chademo" aria-pressed="false">
+                <button type="button" class="socket-btn" data-scope="filter" data-target="filter_socket_chademo" aria-pressed="false">
                   <img src="/static/icons/chademo.svg" alt="CHAdeMO" />
                   <span>CHAdeMO</span>
                 </button>
 
-                <button type="button" class="socket-btn" data-target="filter_socket_ccs1" aria-pressed="false">
+                <button type="button" class="socket-btn" data-scope="filter" data-target="filter_socket_ccs1" aria-pressed="false">
                   <img src="/static/icons/css1.svg" alt="CCS Combo Type 1" />
                   <span>CCS Combo Type 1</span>
                 </button>
 
-                <button type="button" class="socket-btn" data-target="filter_socket_ccs" aria-pressed="false">
+                <button type="button" class="socket-btn" data-scope="filter" data-target="filter_socket_ccs" aria-pressed="false">
                   <img src="/static/icons/css2.svg" alt="CCS Combo Type 2" />
                   <span>CCS Combo Type 2</span>
                 </button>
 
-                <button type="button" class="socket-btn" data-target="filter_socket_gbt" aria-pressed="false">
+                <button type="button" class="socket-btn" data-scope="filter" data-target="filter_socket_gbt" aria-pressed="false">
                   <img src="/static/icons/gbt.svg" alt="GB/T" />
                   <span>GB/T</span>
                 </button>
 
-                <button type="button" class="socket-btn" data-target="filter_socket_supercharger" aria-pressed="false">
-                  <img src="/static/icons/supercharger.svg" alt="Supercharger" />
-                  <span>Super<br>charger</span>
-                </button>
               </div>
               <input id="filter_socket_type1" type="checkbox" class="hidden-input" />
               <input id="filter_socket_type2" type="checkbox" class="hidden-input" />
@@ -240,7 +233,6 @@
               <input id="filter_socket_ccs1" type="checkbox" class="hidden-input" />
               <input id="filter_socket_ccs" type="checkbox" class="hidden-input" />
               <input id="filter_socket_gbt" type="checkbox" class="hidden-input" />
-              <input id="filter_socket_supercharger" type="checkbox" class="hidden-input" />
             </div>
 
             <div class="panel-footer">
@@ -278,6 +270,7 @@
 
       <!--Bottom tray-->
       <div id="shell-tray">
+        <div id="shell-tray-bg"></div>
 
         <div id="shell-tray-card-container">
           <div class="mw-card" data-ref="search-ref" tabindex="-1">
@@ -287,7 +280,14 @@
 
             <div class="mw-inner">
               <div class="mw-search-container" aria-labelledby="search-header">
-                <h3>OpenEVmap</h3>
+                <div class="mw-search-header-title">
+                  <div class="nav-header">
+                    <div class="mw-left-section">
+                      <h1 class="visually-hidden">OpenEVmap</h1>
+                    </div>
+                  </div>
+        
+                </div>
 
                 <form class="mw-search-header" role="region" aria-label="Search" tabindex="-1">
                   <div id="mw-search-bar-and-results">
@@ -325,7 +325,15 @@
                   <p>Information</p>
                   <img src="{{ url_for('static', filename='icons/chevron.svg') }}" alt="Info" />
                 </button>
+
               </div>
+
+              <!--Copyright-->
+              <div class="copyright">
+                  <p>OpenEVmap 1.0</p>
+                  <p>2026</p>
+                </div>
+
 
             </div>
           </div>

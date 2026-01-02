@@ -90,7 +90,7 @@ body {
   display: none;
 }
 
-h1, h2, h3, h4, h5, h6, p, div, span, input, button {
+h1, h2, h3, h4, h5, h6, p, div, span, input, button, body {
   font-family: 'Manrope', sans-serif;
 }
 
@@ -142,7 +142,7 @@ input{
   position: absolute;
   top: 20px;
   right: 10px;
-  z-index: 9000;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   gap: 0px;
@@ -189,6 +189,7 @@ input{
     display: flex;
     flex-direction: column;
     width: 100%;
+    border-radius: 16px;
 }
 
 .vstack_cell{
@@ -508,7 +509,7 @@ button.ghost {
 }
 
 .is-hidden {
-  display: none;
+  display: none ;
 }
 
 #shell-tray {
@@ -516,12 +517,15 @@ button.ghost {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 100vh;
-  z-index: 2000;
+  height: 90vh;
+  max-height: 90vh;
+  z-index: 101;
   display: flex;
-  pointer-events: auto;
   flex-direction: column;
   justify-content: flex-end;
+  transform: translateY(calc(100% - 180px));
+  transition: transform 0.25s ease;
+  pointer-events: auto;
 }
 
 #shell-tray-bg {
@@ -536,12 +540,9 @@ button.ghost {
 
 #shell-tray-card-container {
   position: relative;
-  height: 90vh;
-  max-height: 90vh;
-  transform: translateY(calc(100% - 180px));
-  transition: transform 0.25s ease;
+  height: 100%;
+  max-height: 100%;
   pointer-events: auto;
-  touch-action: none;
 }
 
 .mw-card {
@@ -708,6 +709,46 @@ button.ghost {
   padding-right: 16px;
 }
 
+.form-row.hidden {
+  display: none;
+}
+
+.socket-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+
+.socket-fields {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.socket-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.socket-details .form-row {
+  margin-bottom: 0;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.socket-details .form-row label {
+  width: 140px;
+}
+
+.socket-details .form-row input {
+  width: 100%;
+}
+
 
 .form-column {
   width: 100%;
@@ -802,12 +843,6 @@ button.ghost {
   color: var(--text);
 }
 
-.charge-row {
-  display: grid;
-  grid-template-columns: 1fr 100px;
-  gap: 8px;
-}
-
 .modal-body .panel-footer {
   position: fixed;
   bottom: 0px;
@@ -834,6 +869,8 @@ button.ghost {
 
 .hint {
   font-size: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
   color: var(--muted);
   margin-top: 8px;
 }
@@ -943,4 +980,15 @@ button.ghost {
 .filters-list input{
   width: 24px;
   height: 24px;
+}
+
+
+.copyright{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  opacity: 0.25;
 }

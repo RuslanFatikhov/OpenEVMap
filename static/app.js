@@ -76,15 +76,19 @@ const filterCHAdeMO = document.getElementById("filter_socket_chademo");
 const filterCCS1 = document.getElementById("filter_socket_ccs1");
 const filterCCS = document.getElementById("filter_socket_ccs");
 const filterGBT = document.getElementById("filter_socket_gbt");
-const filterSupercharger = document.getElementById("filter_socket_supercharger");
 const feeCheckbox = document.getElementById("fee");
-const chargeRow = document.getElementById("chargeRow");
-const chargeAmount = document.getElementById("charge_amount");
-const chargeCurrency = document.getElementById("charge_currency");
-const socketButtons = document.querySelectorAll(".socket-btn");
+const costRow = document.getElementById("costRow");
+const costInput = document.getElementById("cost");
+const filterSocketButtons = document.querySelectorAll(
+  ".socket-btn[data-scope='filter']"
+);
+const editSocketButtons = document.querySelectorAll(
+  ".socket-btn[data-scope='edit']"
+);
 const loadingStatus = document.getElementById("loadingStatus");
 const zoomHint = document.getElementById("zoomHint");
-const tray = document.getElementById("shell-tray-card-container");
+const tray = document.getElementById("shell-tray");
+const trayCard = document.getElementById("shell-tray-card-container");
 const trayHandle = document.querySelector(".mw-card-handle");
 
 const FILTERS_KEY = "openEVmap:filters";
@@ -113,11 +117,11 @@ function setLoadingState(nextLoading) {
 }
 
 function initBottomTray() {
-  if (!tray) return;
+  if (!tray || !trayCard) return;
   const dragTarget = tray;
-  const header = tray.querySelector(".mw-search-header-title");
-  const search = tray.querySelector(".mw-search-bar-container");
-  const handle = tray.querySelector(".mw-card-handle");
+  const header = trayCard.querySelector(".mw-search-header-title");
+  const search = trayCard.querySelector(".mw-search-bar-container");
+  const handle = trayCard.querySelector(".mw-card-handle");
   let expanded = 0;
   let maxTranslate = 0;
   let startY = 0;
@@ -190,18 +194,7 @@ function tagsFromForm() {
     if (value === "") continue;
     tags[key] = value;
   }
-  const checkboxFields = [
-    "socket:type1",
-    "socket:type2",
-    "socket:ccs",
-    "socket:chademo",
-    "socket:ccs1",
-    "socket:gbt",
-    "socket:tesla_supercharger",
-    "fast_charge",
-    "payment:app:qr",
-    "fee",
-  ];
+  const checkboxFields = ["fee"];
   checkboxFields.forEach((key) => {
     const input = editForm.querySelector(`[name='${key}']`);
     const wasPresent = state.selection?.tags?.[key] !== undefined;
@@ -215,30 +208,93 @@ function tagsFromForm() {
       }
     }
   });
+  const socketRowMap = {
+    "socket:type1": "socket_row_type1",
+    "socket:type2": "socket_row_type2",
+    "socket:chademo": "socket_row_chademo",
+    "socket:ccs1": "socket_row_ccs1",
+    "socket:ccs": "socket_row_ccs",
+    "socket:gbt": "socket_row_gbt",
+  };
+  const socketCounts = [
+    "socket:type1",
+    "socket:type2",
+    "socket:chademo",
+    "socket:ccs1",
+    "socket:ccs",
+    "socket:gbt",
+  ];
+  socketCounts.forEach((key) => {
+    const input = editForm.querySelector(`[name='${key}']`);
+    if (!input) return;
+    const rowId = socketRowMap[key];
+    if (rowId) {
+      const row = document.getElementById(rowId);
+      if (row && row.classList.contains("hidden")) {
+        delete tags[key];
+        return;
+      }
+    }
+    const raw = input.value.trim();
+    const value = parseInt(raw, 10);
+    if (!raw || Number.isNaN(value) || value <= 0) {
+      delete tags[key];
+      return;
+    }
+    tags[key] = String(value);
+  });
+  const socketOutputs = [
+    "socket:type1:output",
+    "socket:type2:output",
+    "socket:chademo:output",
+    "socket:ccs1:output",
+    "socket:ccs:output",
+    "socket:gbt:output",
+  ];
+  socketOutputs.forEach((key) => {
+    const input = editForm.querySelector(`[name='${key}']`);
+    if (!input) return;
+    const raw = input.value.trim();
+    if (!raw) {
+      delete tags[key];
+      return;
+    }
+    const baseKey = key.replace(":output", "");
+    const countValue = tags[baseKey];
+    if (!countValue) {
+      delete tags[key];
+      return;
+    }
+    tags[key] = raw;
+  });
   if (feeCheckbox.checked) {
-    const amount = chargeAmount.value.trim();
-    const currency = chargeCurrency.value.trim();
-    if (amount) {
-      tags.charge = `${amount} ${currency}`;
+    const cost = costInput.value.trim();
+    if (cost) {
+      tags.cost = cost;
     } else {
-      delete tags.charge;
+      delete tags.cost;
     }
   } else {
-    delete tags.charge;
+    delete tags.cost;
   }
   delete tags.source;
-  delete tags.charge_amount;
-  delete tags.charge_currency;
   return tags;
 }
 
 function fillForm(tags = {}) {
+  const socketRowMap = {
+    "socket:type1": "socket_row_type1",
+    "socket:type2": "socket_row_type2",
+    "socket:chademo": "socket_row_chademo",
+    "socket:ccs1": "socket_row_ccs1",
+    "socket:ccs": "socket_row_ccs",
+    "socket:gbt": "socket_row_gbt",
+  };
   const fields = [
     "name",
     "operator",
     "brand",
     "capacity",
-    "charging_station:output",
     "opening_hours",
     "access",
   ];
@@ -248,36 +304,64 @@ function fillForm(tags = {}) {
       el.value = tags[field] || "";
     }
   });
-  const checkboxFields = [
-    "socket:type1",
-    "socket:type2",
-    "socket:ccs",
-    "socket:chademo",
-    "socket:ccs1",
-    "socket:gbt",
-    "socket:tesla_supercharger",
-    "fast_charge",
-    "payment:app:qr",
-    "fee",
-  ];
+  const checkboxFields = ["fee"];
   checkboxFields.forEach((field) => {
     const el = editForm.querySelector(`[name='${field}']`);
     if (!el) return;
     const raw = tags[field];
     el.checked = raw && String(raw).toLowerCase() !== "no";
   });
-  refreshSocketButtons();
-  if (tags.charge) {
-    const parts = String(tags.charge).split(" ");
-    chargeAmount.value = parts[0] || "";
-    chargeCurrency.value = parts[1] || "RUB";
+  refreshEditButtonsFromRows();
+  const socketCounts = [
+    "socket:type1",
+    "socket:type2",
+    "socket:chademo",
+    "socket:ccs1",
+    "socket:ccs",
+    "socket:gbt",
+  ];
+  socketCounts.forEach((field) => {
+    const el = editForm.querySelector(`[name='${field}']`);
+    if (!el) return;
+    const raw = tags[field];
+    const value = parseInt(raw, 10);
+    const normalized = Number.isNaN(value) ? "" : String(value);
+    el.value = normalized;
+    const rowId = socketRowMap[field];
+    if (rowId) {
+      setSocketRowVisible(rowId, Boolean(normalized), true);
+    }
+  });
+  const socketOutputs = [
+    "socket:type1:output",
+    "socket:type2:output",
+    "socket:chademo:output",
+    "socket:ccs1:output",
+    "socket:ccs:output",
+    "socket:gbt:output",
+  ];
+  socketOutputs.forEach((field) => {
+    const el = editForm.querySelector(`[name='${field}']`);
+    if (!el) return;
+    el.value = tags[field] || "";
+    if (el.value) {
+      const baseKey = field.replace(":output", "");
+      const rowId = socketRowMap[baseKey];
+      if (rowId) {
+        setSocketRowVisible(rowId, true, false);
+      }
+    }
+  });
+  if (tags.cost) {
+    costInput.value = tags.cost || "";
     if (!feeCheckbox.checked) {
       feeCheckbox.checked = true;
     }
   } else {
-    chargeAmount.value = "";
+    costInput.value = "";
   }
-  toggleChargeRow();
+  toggleCostRow();
+  refreshEditButtonsFromRows();
 }
 
 async function fetchMe() {
@@ -306,8 +390,8 @@ function openModal(el) {
   modal.classList.remove("hidden");
 }
 
-function refreshSocketButtons() {
-  socketButtons.forEach((btn) => {
+function refreshFilterButtons() {
+  filterSocketButtons.forEach((btn) => {
     const targetId = btn.dataset.target;
     const input = document.getElementById(targetId);
     if (!input) return;
@@ -317,25 +401,63 @@ function refreshSocketButtons() {
     btn.setAttribute("aria-pressed", checked ? "true" : "false");
     btn.disabled = disabled;
     btn.classList.toggle("disabled", disabled);
-    const state = btn.querySelector(".socket-state");
-    if (state) {
-      state.textContent = checked ? "Unselect" : "Select";
-    }
   });
 }
 
-function initSocketButtons() {
-  socketButtons.forEach((btn) => {
+function initFilterButtons() {
+  filterSocketButtons.forEach((btn) => {
     const targetId = btn.dataset.target;
     const input = document.getElementById(targetId);
     if (!input) return;
     btn.addEventListener("click", () => {
       input.checked = !input.checked;
       input.dispatchEvent(new Event("change", { bubbles: true }));
-      refreshSocketButtons();
+      refreshFilterButtons();
     });
   });
-  refreshSocketButtons();
+  refreshFilterButtons();
+}
+
+function setSocketRowVisible(rowId, visible, clear = false) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  row.classList.toggle("hidden", !visible);
+  if (clear && !visible) {
+    row.querySelectorAll("input").forEach((input) => {
+      input.value = "";
+    });
+  }
+}
+
+function refreshEditButtonsFromRows() {
+  editSocketButtons.forEach((btn) => {
+    const rowId = btn.dataset.row;
+    const row = document.getElementById(rowId);
+    const active = row ? !row.classList.contains("hidden") : false;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function initEditSocketButtons() {
+  editSocketButtons.forEach((btn) => {
+    const rowId = btn.dataset.row;
+    if (!rowId) return;
+    btn.addEventListener("click", () => {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const willShow = row.classList.contains("hidden");
+      setSocketRowVisible(rowId, willShow, true);
+      if (willShow) {
+        const first = row.querySelector("input");
+        if (first) {
+          first.focus();
+        }
+      }
+      refreshEditButtonsFromRows();
+    });
+  });
+  refreshEditButtonsFromRows();
 }
 
 function closeModal() {
@@ -343,8 +465,8 @@ function closeModal() {
   state.selection = null;
   editForm.reset();
   setHint("");
-  toggleChargeRow();
-  refreshSocketButtons();
+  toggleCostRow();
+  refreshEditButtonsFromRows();
 }
 
 function openFilters() {
@@ -395,7 +517,6 @@ function saveFiltersState() {
     chademo: filterCHAdeMO.checked,
     ccs1: filterCCS1.checked,
     gbt: filterGBT.checked,
-    supercharger: filterSupercharger.checked,
   };
   localStorage.setItem(FILTERS_KEY, JSON.stringify(data));
 }
@@ -409,9 +530,6 @@ function applyFiltersState(data) {
   if (typeof data.chademo === "boolean") filterCHAdeMO.checked = data.chademo;
   if (typeof data.ccs1 === "boolean") filterCCS1.checked = data.ccs1;
   if (typeof data.gbt === "boolean") filterGBT.checked = data.gbt;
-  if (typeof data.supercharger === "boolean") {
-    filterSupercharger.checked = data.supercharger;
-  }
 }
 
 async function loadPOIs(options = {}) {
@@ -477,7 +595,9 @@ function scheduleLoad() {
 function hasSocket(tags, key) {
   const raw = tags?.[key];
   if (!raw) return false;
-  return String(raw).toLowerCase() !== "no";
+  const value = parseInt(raw, 10);
+  if (Number.isNaN(value)) return false;
+  return value >= 1;
 }
 
 function passesFilter(el) {
@@ -491,15 +611,13 @@ function passesFilter(el) {
   const wantCCS1 = filterCCS1.checked;
   const wantCCS = filterCCS.checked;
   const wantGBT = filterGBT.checked;
-  const wantSupercharger = filterSupercharger.checked;
   if (
     !wantType1 &&
     !wantType2 &&
     !wantCHAdeMO &&
     !wantCCS1 &&
     !wantCCS &&
-    !wantGBT &&
-    !wantSupercharger
+    !wantGBT
   ) {
     return false;
   }
@@ -509,8 +627,7 @@ function passesFilter(el) {
     (wantCHAdeMO && hasSocket(tags, "socket:chademo")) ||
     (wantCCS1 && hasSocket(tags, "socket:ccs1")) ||
     (wantCCS && hasSocket(tags, "socket:ccs")) ||
-    (wantGBT && hasSocket(tags, "socket:gbt")) ||
-    (wantSupercharger && hasSocket(tags, "socket:tesla_supercharger"))
+    (wantGBT && hasSocket(tags, "socket:gbt"))
   );
 }
 
@@ -742,7 +859,6 @@ function syncFilterState() {
   filterCCS1.disabled = allChecked;
   filterCCS.disabled = allChecked;
   filterGBT.disabled = allChecked;
-  filterSupercharger.disabled = allChecked;
   if (allChecked) {
     filterType1.checked = false;
     filterType2.checked = false;
@@ -750,11 +866,10 @@ function syncFilterState() {
     filterCCS1.checked = false;
     filterCCS.checked = false;
     filterGBT.checked = false;
-    filterSupercharger.checked = false;
   }
   saveFiltersState();
   updateSource();
-  refreshSocketButtons();
+  refreshFilterButtons();
 }
 
 const filterInputs = [
@@ -764,7 +879,6 @@ const filterInputs = [
   filterCCS1,
   filterCCS,
   filterGBT,
-  filterSupercharger,
 ];
 filterInputs.forEach((input) => {
   if (!input) return;
@@ -776,7 +890,7 @@ filterInputs.forEach((input) => {
 if (filterAll) {
   filterAll.onchange = syncFilterState;
 }
-feeCheckbox.onchange = toggleChargeRow;
+feeCheckbox.onchange = toggleCostRow;
 searchInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -806,7 +920,8 @@ editForm.addEventListener("submit", async (e) => {
     return;
   }
   const comment = "Update EV charger details";
-  const source = editForm.source.value.trim() || "survey";
+  const sourceInput = editForm.querySelector("[name='source']");
+  const source = sourceInput ? sourceInput.value.trim() || "survey" : "survey";
   const lat = state.selection.lat ?? state.selection.center?.lat;
   const lon = state.selection.lon ?? state.selection.center?.lon;
   if (lat == null || lon == null) {
@@ -831,6 +946,7 @@ editForm.addEventListener("submit", async (e) => {
   state.queue.set(key, item);
   uploadBtn.textContent = `Upload (${state.queue.size})`;
   setHint("Saved locally. Use Upload to commit.", false);
+  closeModal();
 });
 
 uploadBtn.addEventListener("click", async () => {
@@ -872,7 +988,8 @@ uploadBtn.addEventListener("click", async () => {
 fetchMe();
 applyFiltersState(loadFiltersState());
 syncFilterState();
-initSocketButtons();
+initFilterButtons();
+initEditSocketButtons();
 if (searchBtn) {
   const hasValue = searchInput.value.trim().length > 0;
   searchBtn.classList.toggle("is-hidden", !hasValue);
@@ -880,9 +997,9 @@ if (searchBtn) {
 updateZoomHint();
 initBottomTray();
 
-function toggleChargeRow() {
-  if (!feeCheckbox || !chargeRow) return;
-  chargeRow.style.display = feeCheckbox.checked ? "block" : "none";
+function toggleCostRow() {
+  if (!feeCheckbox || !costRow) return;
+  costRow.style.display = feeCheckbox.checked ? "block" : "none";
 }
 
-toggleChargeRow();
+toggleCostRow();

@@ -35,19 +35,21 @@ ALLOWED_TAGS = [
     "name",
     "operator",
     "brand",
-    "socket:type2",
-    "socket:ccs",
-    "socket:chademo",
-    "fast_charge",
     "fee",
-    "charge",
-    "payment:app:qr",
+    "cost",
     "capacity",
-    "charging_station:output",
     "opening_hours",
     "access",
     "amenity",
 ]
+
+BLOCKED_TAGS = {
+    "fast_charge",
+    "charge",
+    "payment:app:qr",
+    "charging_station:output",
+    "socket:tesla_supercharger",
+}
 
 
 def _require_auth():
@@ -89,7 +91,18 @@ def _build_changeset_xml(comment, source, tags):
 def _normalize_tags(tags):
     out = {}
     for key, value in (tags or {}).items():
-        if key not in ALLOWED_TAGS:
+        if key in BLOCKED_TAGS:
+            continue
+        if key in ALLOWED_TAGS:
+            pass
+        elif key.startswith("socket:"):
+            if key in BLOCKED_TAGS:
+                continue
+            if key.count(":") == 1 or key.endswith(":output"):
+                pass
+            else:
+                continue
+        else:
             continue
         if value is None:
             continue
